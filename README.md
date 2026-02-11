@@ -17,7 +17,7 @@ https://m41nul.github.io/social-server-bd/
 | Instagram | ✅ Working |
 | Facebook | ✅ Working |
 
-📞 Phone: [Call](tel:+8801308850528)  
+📞 Phone: +8801308850528)  
 📧 Email: [Mail](mailto:githubmainul@gmail.com)  
 💬 WhatsApp: [Chat](https://wa.me/8801308850528)  
 ✈️ Telegram: [@mdmainulislaminfo](https://t.me/mdmainulislaminfo)
