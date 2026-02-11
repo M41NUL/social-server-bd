@@ -2,6 +2,10 @@
 
 TikTok · Instagram · Facebook — Free Video Downloader
 
+## 📸 Screenshot
+
+![Social Downloader Pro Preview](https://raw.githubusercontent.com/M41NUL/social-server-bd/main/assets/Screenshot_20260212-021151.jpg)
+
 🔗 **[Live site](https://m41nul.github.io/social-server-bd/)**  
 
 
