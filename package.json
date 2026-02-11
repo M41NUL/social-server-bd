@@ -1,0 +1,11 @@
+{
+  "name": "social-server-bd",
+  "version": "1.0.0",
+  "description": "TikTok, Instagram, Facebook Downloader API",
+  "main": "api/tiktok.js",
+  "scripts": {
+    "dev": "vercel dev"
+  },
+  "author": "Mainul Islam",
+  "license": "MIT"
+}
