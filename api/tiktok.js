@@ -21,8 +21,6 @@ export default async function handler(req, res) {
 
         // ========= TIKTOK =========
         if (platform === 'tiktok') {
-
-            // vt.tiktok redirect fix
             if (url.includes('vt.tiktok.com')) {
                 const head = await fetch(url, { method: 'HEAD', redirect: 'follow' });
                 url = head.url;
@@ -62,31 +60,44 @@ export default async function handler(req, res) {
         // ========= INSTAGRAM =========
         if (platform === 'instagram') {
 
-            // API 1 – ddinstagram
+            // API 1 – igdlapi
             try {
-                const r1 = await fetch(`https://ddinstagram.com/api?url=${encodeURIComponent(url)}`);
+                const r1 = await fetch(`https://api.igdlapi.com/v1/instagram?url=${encodeURIComponent(url)}`);
                 const j1 = await r1.json();
-                if (j1.media?.length) {
+                if (j1.url) {
                     return res.json({
                         success: true,
                         platform: 'instagram',
-                        video: j1.media[0].url
+                        title: j1.title || 'Instagram Video',
+                        video: j1.url,
+                        thumbnail: j1.thumbnail || null
                     });
                 }
             } catch {}
 
-            // API 2 – snapsave (fallback)
+            // API 2 – insta-down fallback
             try {
-                const r2 = await fetch(`https://snapsave.app/action.php?url=${encodeURIComponent(url)}`);
-                const t2 = await r2.text();
-                if (t2.includes('download')) {
+                const r2 = await fetch(`https://insta-downloader.net/api?url=${encodeURIComponent(url)}`);
+                const j2 = await r2.json();
+                if (j2.video_url) {
                     return res.json({
                         success: true,
                         platform: 'instagram',
-                        raw: t2
+                        title: j2.title || 'Instagram Video',
+                        video: j2.video_url,
+                        thumbnail: j2.thumbnail || null
                     });
                 }
             } catch {}
+
+            // Last fallback: Redirect
+            return res.json({
+                success: true,
+                platform: 'instagram',
+                method: 'redirect',
+                message: 'Instagram ভিডিও নতুন ট্যাবে ওপেন হবে',
+                redirect: `https://snapsave.app/instagram-downloader/?url=${encodeURIComponent(url)}`
+            });
         }
 
         // ========= FACEBOOK =========
