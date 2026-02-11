@@ -6,49 +6,48 @@ export default async function handler(req, res) {
     if (!url) return res.status(400).json({ error: 'URL is required' });
 
     try {
-        // ============ FACEBOOK FIX ============
-        if (url.includes('facebook.com') || url.includes('fb.watch') || url.includes('fb.com') || platform === 'facebook') {
+        // ============ FACEBOOK - নিউ API ============
+        if (url.includes('facebook.com') || url.includes('fb.watch') || platform === 'facebook') {
             
-            // Facebook API 1
+            // API 1: fbdown.net
             try {
-                const apiUrl = `https://api.vevioz.com/api/button/facebook?url=${encodeURIComponent(url)}`;
+                const apiUrl = `https://fbdown.net/download.php?url=${encodeURIComponent(url)}`;
                 const response = await fetch(apiUrl);
                 const html = await response.text();
-                const match = html.match(/https?:\/\/[^"'\s]+\.mp4[^"'\s]*/i);
                 
-                if (match) {
+                const hdMatch = html.match(/https:\/\/[^"'\s]+\.fbcdn\.net[^"'\s]*\.mp4[^"'\s]*/i);
+                if (hdMatch) {
                     return res.json({
                         success: true,
                         platform: 'facebook',
                         title: 'Facebook Video',
                         thumbnail: 'https://images.unsplash.com/photo-1611162616305-c69b3fa7fbe0?w=400',
-                        video: match[0],
-                        hdvideo: match[0]
+                        video: hdMatch[0],
+                        hdvideo: hdMatch[0]
                     });
                 }
             } catch (e) {
-                console.log('Facebook API 1 failed');
+                console.log('FB API 1 failed');
             }
             
-            // Facebook API 2 - Backup
+            // API 2: fb.watch
             try {
-                const apiUrl = `https://getmyfb.com/get.php?url=${encodeURIComponent(url)}`;
+                const apiUrl = `https://api.fb.watch/api/download?url=${encodeURIComponent(url)}`;
                 const response = await fetch(apiUrl);
-                const html = await response.text();
-                const match = html.match(/https?:\/\/[^"'\s]+\.mp4[^"'\s]*/i);
+                const data = await response.json();
                 
-                if (match) {
+                if (data.url) {
                     return res.json({
                         success: true,
                         platform: 'facebook',
                         title: 'Facebook Video',
-                        thumbnail: 'https://images.unsplash.com/photo-1611162616305-c69b3fa7fbe0?w=400',
-                        video: match[0],
-                        hdvideo: match[0]
+                        thumbnail: data.thumbnail || '',
+                        video: data.url,
+                        hdvideo: data.hd_url || data.url
                     });
                 }
             } catch (e) {
-                console.log('Facebook API 2 failed');
+                console.log('FB API 2 failed');
             }
         }
         
@@ -70,15 +69,18 @@ export default async function handler(req, res) {
                     });
                 }
             } catch (e) {
-                console.log('Instagram API failed');
+                console.log('Instagram API error:', e.message);
             }
         }
         
         // ============ TIKTOK ============
-        else if (url.includes('tiktok.com') || url.includes('vt.tiktok.com') || platform === 'tiktok') {
-            
+        else if (url.includes('tiktok.com') || platform === 'tiktok') {
+            // vt.tiktok.com fix
             if (url.includes('vt.tiktok.com')) {
-                const response = await fetch(url, { method: 'HEAD', redirect: 'follow' });
+                const response = await fetch(url, { 
+                    method: 'HEAD', 
+                    redirect: 'follow' 
+                });
                 url = response.url;
             }
             
@@ -100,6 +102,7 @@ export default async function handler(req, res) {
         return res.json({ success: false, error: 'Video not found' });
         
     } catch (error) {
+        console.error('API Error:', error.message);
         return res.status(500).json({ success: false, error: error.message });
     }
 }
