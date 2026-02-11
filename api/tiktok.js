@@ -10,18 +10,30 @@ export default async function handler(req, res) {
     }
 
     try {
-        // ============ FIX: vt.tiktok.com লিংক কনভার্ট ============
-        if (url.includes('vt.tiktok.com')) {
-            const response = await fetch(url, {
-                method: 'HEAD',
-                redirect: 'follow'
-            });
-            url = response.url;
+        // ============ PLATFORM DETECTION ============
+        // Facebook URL patterns
+        if (url.includes('facebook.com') || url.includes('fb.watch') || url.includes('fb.com')) {
+            platform = 'facebook';
+        }
+        // Instagram URL patterns
+        else if (url.includes('instagram.com') || url.includes('instagr.am')) {
+            platform = 'instagram';
+        }
+        // TikTok URL patterns
+        else if (url.includes('tiktok.com') || url.includes('vt.tiktok.com')) {
             platform = 'tiktok';
+            // Handle vt.tiktok.com short links
+            if (url.includes('vt.tiktok.com')) {
+                const response = await fetch(url, { 
+                    method: 'HEAD', 
+                    redirect: 'follow' 
+                });
+                url = response.url;
+            }
         }
         
         // ============ TIKTOK ============
-        if (platform === 'tiktok' || url.includes('tiktok.com')) {
+        if (platform === 'tiktok') {
             const response = await fetch(`https://www.tikwm.com/api/?url=${encodeURIComponent(url)}&hd=1`);
             const data = await response.json();
             
@@ -38,43 +50,61 @@ export default async function handler(req, res) {
             }
         }
         
-        // ============ INSTAGRAM ============
-        else if (platform === 'instagram' || url.includes('instagram.com')) {
-            const response = await fetch(`https://api.instagramdownloader.net/api/instagram/post?url=${encodeURIComponent(url)}`);
-            const data = await response.json();
-            
-            if (data.url) {
-                return res.json({
-                    success: true,
-                    platform: 'instagram',
-                    title: 'Instagram Video',
-                    thumbnail: data.thumbnail || '',
-                    video: data.url,
-                    hdvideo: data.hd_url || data.url
-                });
-            }
-        }
-        
         // ============ FACEBOOK ============
-        else if (platform === 'facebook' || url.includes('facebook.com') || url.includes('fb.watch')) {
-            const response = await fetch(`https://api.vevioz.com/api/button/facebook?url=${encodeURIComponent(url)}`);
-            const html = await response.text();
-            
-            const match = html.match(/https?:\/\/[^"'\s]+\.mp4[^"'\s]*/i);
-            if (match) {
-                return res.json({
-                    success: true,
-                    platform: 'facebook',
-                    title: 'Facebook Video',
-                    video: match[0],
-                    hdvideo: match[0]
-                });
+        else if (platform === 'facebook') {
+            try {
+                // Facebook API 1
+                const apiUrl = `https://api.vevioz.com/api/button/facebook?url=${encodeURIComponent(url)}`;
+                const response = await fetch(apiUrl);
+                const html = await response.text();
+                const match = html.match(/https?:\/\/[^"'\s]+\.mp4[^"'\s]*/i);
+                
+                if (match) {
+                    return res.json({
+                        success: true,
+                        platform: 'facebook',
+                        title: 'Facebook Video',
+                        thumbnail: 'https://images.unsplash.com/photo-1611162616305-c69b3fa7fbe0?w=400',
+                        video: match[0],
+                        hdvideo: match[0]
+                    });
+                }
+            } catch (e) {
+                console.log('Facebook API error:', e);
             }
         }
         
-        return res.json({ success: false, error: 'Video not found' });
+        // ============ INSTAGRAM ============
+        else if (platform === 'instagram') {
+            try {
+                // Instagram API
+                const apiUrl = `https://api.instagramdownloader.net/api/instagram/post?url=${encodeURIComponent(url)}`;
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+                
+                if (data.url) {
+                    return res.json({
+                        success: true,
+                        platform: 'instagram',
+                        title: 'Instagram Video',
+                        thumbnail: data.thumbnail || 'https://images.unsplash.com/photo-1611262588024-d12430b98920?w=400',
+                        video: data.url,
+                        hdvideo: data.hd_url || data.url
+                    });
+                }
+            } catch (e) {
+                console.log('Instagram API error:', e);
+            }
+        }
+        
+        return res.json({ 
+            success: false, 
+            error: 'Video not found or unsupported platform',
+            platform: platform 
+        });
         
     } catch (error) {
+        console.error('API Error:', error);
         return res.status(500).json({ success: false, error: error.message });
     }
 }
