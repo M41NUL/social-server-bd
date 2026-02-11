@@ -14,8 +14,8 @@ https://m41nul.github.io/social-server-bd/
 | Platform | Status |
 |---------|--------|
 | TikTok | ✅ Working |
-| Instagram | ✅ Working |
-| Facebook | ✅ Working |
+| Instagram | ⚠️ Limited |
+| Facebook | ⚠️ Limited |
 
 📞 Phone: +8801308850528  
 📧 Email: [Mail](mailto:githubmainul@gmail.com)  
