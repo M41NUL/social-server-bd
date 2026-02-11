@@ -1,3 +1,11 @@
+<p align="center">
+  <img src="https://img.shields.io/github/stars/M41NUL/social-server-bd?style=for-the-badge&logo=github&color=yellow" />
+  <img src="https://img.shields.io/github/forks/M41NUL/social-server-bd?style=for-the-badge&logo=github&color=blue" />
+  <img src="https://img.shields.io/github/license/M41NUL/social-server-bd?style=for-the-badge&logo=opensourceinitiative&color=green" />
+  <img src="https://img.shields.io/github/last-commit/M41NUL/social-server-bd?style=for-the-badge&logo=git&color=red" />
+  <img src="https://img.shields.io/github/deployments/M41NUL/social-server-bd/github-pages?style=for-the-badge&logo=githubpages&label=pages&color=blueviolet" />
+</p>
+
 # 📱 Social Downloader Pro
 
 TikTok · Instagram · Facebook — Free Video Downloader
